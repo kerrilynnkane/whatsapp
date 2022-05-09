@@ -84,6 +84,7 @@ func (user *User) handleBackfillRequestsLoop(backfillRequests chan *database.Bac
 		conv := user.bridge.DB.HistorySyncQuery.GetConversation(user.MXID, req.Portal)
 		if conv == nil {
 			user.log.Debugfln("Could not find history sync conversation data for %s", req.Portal.String())
+			req.MarkDone()
 			continue
 		}
 		portal := user.GetPortalByJID(conv.PortalKey.JID)
@@ -105,6 +106,7 @@ func (user *User) handleBackfillRequestsLoop(backfillRequests chan *database.Bac
 		}
 
 		user.backfillInChunks(req, conv, portal)
+		req.MarkDone()
 	}
 }
 
